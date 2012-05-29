@@ -55,7 +55,7 @@ class xml2obj(ContentHandler):
     else:
       for key in KnownOptOut:
         known_opt[key] = key
-    
+
     row_opt = options
     self.opt = {}
 
@@ -77,10 +77,10 @@ class xml2obj(ContentHandler):
         self.opt['rootname'] = '';
     else:
       self.opt['rootname'] = DefRootName
-      
+
     if 'xmldecl' in self.opt and str(self.opt['xmldecl']) == '1':
       self.opt['xmldecl'] = DefXmlDecl
-      
+
     if 'contentkey' in self.opt:
       m = re.match('^-(.*)$', self.opt['contentkey'])
       if m:
@@ -88,7 +88,7 @@ class xml2obj(ContentHandler):
         self.opt['collapseagain'] = 1
     else:
       self.opt['contentkey'] = DefContentKey
-      
+
     if not 'normalizespace' in self.opt:
       self.opt['normalizespace'] = 0
 
@@ -163,17 +163,17 @@ class xml2obj(ContentHandler):
       elif key == '0':
         if re.match('^\s*$', val): # skip all whitespace content
           continue
-        
+
         # do variable substitutions
         if hasattr(self, '_var_values'):
           re.sub('\$\{(\w+)\}', lambda match: self.get_var(match.group(1)))
-          
+
         # look for variable definitions
         if 'varattr' in self.opt:
           var = self.opt['varattr']
           if attr.has_key(var):
             self.set_var(attr[var], val)
-            
+
         # collapse text content in element with no attributes to a string
         if not len(attr) and val == tree[-1]:
           return { self.opt['contentkey'] : val } if 'forcecontent' in self.opt else val
@@ -344,7 +344,7 @@ class xml2obj(ContentHandler):
     del self._ancestors
     if 'xmldecl' in self.opt and self.opt['xmldecl']:
       xml = self.opt['xmldecl'] + '\n' + xml
-    
+
     return xml
 
   def value_to_xml(self, tree, name, indent):
@@ -381,7 +381,7 @@ class xml2obj(ContentHandler):
         for key, val in tree.items():
           if key in self.opt['grouptags']:
             tree[key] = { self.opt['grouptags'][key] : val }
-      
+
       nsdecls = ''
       default_ns_url = '';
       nested = []
@@ -482,7 +482,10 @@ class xml2obj(ContentHandler):
   def escape_value(self, data):
     if data is None:
       return ''
-    data = str(data)
+    if isinstance(data, unicode):
+        data = data.encode('utf-8')
+    elif not isinstance(data, str):
+        data = str(data)
     data = data.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
     return data
 
@@ -504,11 +507,11 @@ class xml2obj(ContentHandler):
     result = orig.copy()
     result.update(dict(zip(extra[::2], extra[1::2])))
     return result
-      
+
   #
   # following methods overwrite ContentHandler
   #
-  
+
   def startDocument(self):
     self.lists = []
     self.curlist = self.tree = []
@@ -548,7 +551,7 @@ class xml2obj(ContentHandler):
 
 if __name__ == '__main__':
 #   opt = XMLin('''
-#     <opt> 
+#     <opt>
 #       <item key="item1" attr1="value1" attr2="value2" />
 #       <item key="item2" attr1="value3" attr2="value4" />
 #     </opt>
@@ -597,9 +600,3 @@ if __name__ == '__main__':
   tree = { 'one' : 1, 'content' : 'text' }
   xml = XMLout(tree)
 
-
-  
-  
-  
-
-  
