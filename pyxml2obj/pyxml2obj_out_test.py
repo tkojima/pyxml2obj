@@ -350,7 +350,7 @@ r'''^<(\w+)>\s*
       }}
     xml = XMLout(tree)
     expected = \
-r'''<root>
+u'''<root>
   <parent child="こども" />
 </root>
 '''
@@ -364,10 +364,26 @@ r'''<root>
           }}}
     xml = XMLout(tree)
     expected = \
-r'''<parent>
-  <child>コンテンツ</child>
-</parent>
+u'''<root>
+  <parent name="child">コンテンツ</parent>
+</root>
 '''
+    self.assertEqual(xml, expected)
+
+  def test_tree_attr_key_is_unicode(self):
+    tree = {
+      'parent': {
+        'child': {
+          u'val': u'こども',
+          'content': u'コンテンツ'
+          }}}
+    xml = XMLout(tree)
+    expected = \
+u'''<root>
+  <parent name="child" val="こども">コンテンツ</parent>
+</root>
+'''
+    self.assertEqual(xml, expected)
 
 
 if __name__ == '__main__':

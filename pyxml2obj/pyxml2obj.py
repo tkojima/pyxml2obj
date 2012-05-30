@@ -483,7 +483,7 @@ class xml2obj(ContentHandler):
     if data is None:
       return ''
     if isinstance(data, unicode):
-        data = data.encode('utf-8')
+        pass
     elif not isinstance(data, str):
         data = str(data)
     data = data.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
