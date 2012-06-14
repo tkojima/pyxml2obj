@@ -4,6 +4,7 @@
 import warnings
 import re
 from xml.sax import *
+from collections import OrderedDict
 
 def XMLin(content, options={}):
   obj = xml2obj(options)
@@ -19,7 +20,7 @@ StrictMode  = 0
 KnownOptIn  = 'keyattr keeproot forcecontent contentkey noattr \
                forcearray grouptags normalizespace valueattr'.split()
 KnownOptOut = 'keyattr keeproot contentkey noattr \
-               rootname xmldecl noescape grouptags valueattr'.split()
+               rootname xmldecl noescape grouptags valueattr nosortkeys'.split()
 DefKeyAttr     = 'name key id'.split()
 DefRootName    = 'root'
 DefContentKey  = 'content'
@@ -331,7 +332,7 @@ class xml2obj(ContentHandler):
     elif self.opt['rootname'] == '':
       if isinstance(tree, dict):
         treesave = tree
-        tree = {}
+        tree = OrderedDict()
         for key in treesave:
           if isinstance(treesave[key], dict) or isinstance(treesave[key], list):
             tree[key] = treesave[key]
@@ -475,7 +476,10 @@ class xml2obj(ContentHandler):
 
     if len(hash) > 0:
       tmp = hash.keys()
-      tmp.sort()
+      if 'nosortkeys' in self.opt and self.opt['nosortkeys']:
+          pass
+      else:
+        tmp.sort()
       key.extend(tmp)
     return key
 
