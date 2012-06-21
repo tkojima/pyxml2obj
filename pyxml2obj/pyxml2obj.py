@@ -422,17 +422,21 @@ class xml2obj(ContentHandler):
 
       if nested or text_content is not None:
         if named:
-          result.append('>')
-          if text_content is not None:
-            result.append(text_content)
-            if len(nested):
-              nested[0].lstrip()
+          if len(nested) == 0 and len(text_content) == 0:
+              result.append('/>')
+              result.append(nl)
           else:
-            result.append(nl)
-          if len(nested):
-            result.extend(nested)
-            result.append(indent)
-          result.extend(['</', name, '>', nl])
+            result.append('>')
+            if text_content is not None:
+              result.append(text_content)
+              if len(nested):
+                nested[0].lstrip()
+            else:
+              result.append(nl)
+            if len(nested):
+              result.extend(nested)
+              result.append(indent)
+            result.extend(['</', name, '>', nl])
         else:
           result.extend(nested)
       else:
